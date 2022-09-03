@@ -161,7 +161,7 @@ def create_app(test_config=None):
 
         try:
             questions = Question.query.filter(Question.question.ilike(f"%{search_term}%")).all()
-            
+
             questions_list = [question.format() for question in questions]
 
             category_type = Category.query.get(3).type
@@ -175,10 +175,6 @@ def create_app(test_config=None):
             
         except Exception as e:
             abort(422)
-
-            
-
-        return "Here"
 
 
     """
@@ -221,6 +217,42 @@ def create_app(test_config=None):
     one question at a time is displayed, the user is allowed to answer
     and shown whether they were correct or not.
     """
+    @app.route("/quizzes", methods=["POST"])
+    def get_quiz_question():
+        data = request.get_json()
+        print(data)
+
+        try:
+            previous_questions = data["previous_questions"]
+            quiz_category = data["quiz_category"]
+
+            questions = Question.query.all()
+            questions_list = [question.format() for question in questions]
+
+            filtered_list = []
+
+            for question in questions_list:
+                if question['id'] not in previous_questions:
+                    filtered_list.append(question)
+
+            if quiz_category:
+                for index, item in enumerate(filtered_list):
+                    print(index, item)
+                    if item["category"] != quiz_category["id"]:
+                        filtered_list.pop(index)
+            
+            print(filtered_list)
+
+            selected_question = random.choice(filtered_list) if len(filtered_list) else None
+                
+            return jsonify({
+                'success': True,
+                'question': selected_question,
+            })
+        except Exception as e :
+            print(e)
+            abort()
+
 
     """
     @TODO:
