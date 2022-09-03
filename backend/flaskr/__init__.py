@@ -34,23 +34,19 @@ def create_app(test_config=None):
     Create an endpoint to handle GET requests
     for all available categories.
     """
-    @app.route("/categories/<int:category_id>/questions")
-    def get_category_questions(category_id):
-        category = Category.query.filter(Category.id==category_id).one_or_none()
+    @app.route("/categories")
+    def get_all_categories():
+        categories = Category.query.all()
 
-        if not category:
-            abort(404)
+        categories_obj = dict()
 
-        else:
-            questions = Question.query.filter(Question.category==str(category_id)).all()
-            questions_list = [question.format() for question in questions]
-            
-            return jsonify({
-                'success': True,
-                'questions': questions_list,
-                'total_questions': len(questions_list),
-                'current_category': category.type
-            })
+        for category in categories:
+            categories_obj[category.id] = category.type
+
+        return jsonify({
+            'success': True,
+            'categories': categories_obj,
+        })
 
 
 
@@ -130,6 +126,26 @@ def create_app(test_config=None):
     categories in the left column will cause only questions of that
     category to be shown.
     """
+
+    @app.route("/categories/<int:category_id>/questions")
+    def get_category_questions(category_id):
+        category = Category.query.filter(Category.id==category_id).one_or_none()
+
+        if not category:
+            abort(404)
+
+        else:
+            questions = Question.query.filter(Question.category==str(category_id)).all()
+            questions_list = [question.format() for question in questions]
+            
+            return jsonify({
+                'success': True,
+                'questions': questions_list,
+                'total_questions': len(questions_list),
+                'current_category': category.type
+            })
+
+
 
     """
     @TODO:
