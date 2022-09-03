@@ -25,7 +25,7 @@ def create_app(test_config=None):
     def after_request(response):
         response.headers.add('Access-Control-Allow-Origin', '*')
         response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+        response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
         
         return response
 
@@ -126,6 +126,23 @@ def create_app(test_config=None):
     the form will clear and the question will appear at the end of the last page
     of the questions list in the "List" tab.
     """
+    @app.route("/questions", methods=['POST']) # TODO: Complete this
+    def create_question():
+        
+        payload = request.get_json()
+
+        try:            
+            question = Question(**payload)
+            db.session.add(question)
+            db.session.commit()
+
+            return jsonify({
+                'success': True,
+                'question': question.format()
+            })
+
+        except Exception as e:
+            abort(404)
 
     """
     @TODO:
@@ -137,6 +154,12 @@ def create_app(test_config=None):
     only question that include that string within their question.
     Try using the word "title" to start.
     """
+    @app.route("/questions/search", methods=['POST'])
+    def search_question():
+        print("I made it here")
+
+        return "Here"
+
 
     """
     @TODO:
@@ -184,6 +207,21 @@ def create_app(test_config=None):
     Create error handlers for all expected errors
     including 404 and 422.
     """
+    @app.errorhandler(404)
+    def not_found(error):
+        return jsonify({
+            "success": False, 
+            "error": 404,
+            "message": "Not found"
+            }), 404
+    
+    @app.errorhandler(422)
+    def unprocessable(error):
+        return jsonify({
+        "success": False, 
+        "error": 422,
+        "message": "Unprocessable"
+        }), 422
 
     return app
 

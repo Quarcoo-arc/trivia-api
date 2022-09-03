@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import $ from 'jquery';
 import '../stylesheets/FormView.css';
+import { BASE_URL } from '../utils';
 
 class FormView extends Component {
   constructor(props) {
@@ -16,7 +17,7 @@ class FormView extends Component {
 
   componentDidMount() {
     $.ajax({
-      url: `/categories`, //TODO: update request URL
+      url: `${BASE_URL}/categories`, //TODO: update request URL
       type: 'GET',
       success: (result) => {
         this.setState({ categories: result.categories });
@@ -32,7 +33,7 @@ class FormView extends Component {
   submitQuestion = (event) => {
     event.preventDefault();
     $.ajax({
-      url: '/questions', //TODO: update request URL
+      url: `${BASE_URL}/questions`, //TODO: update request URL
       type: 'POST',
       dataType: 'json',
       contentType: 'application/json',
@@ -42,10 +43,10 @@ class FormView extends Component {
         difficulty: this.state.difficulty,
         category: this.state.category,
       }),
-      xhrFields: {
-        withCredentials: true,
-      },
-      crossDomain: true,
+      // xhrFields: {
+      //   withCredentials: true,
+      // },
+      // crossDomain: true,
       success: (result) => {
         document.getElementById('add-question-form').reset();
         return;
