@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
 
-from models import setup_db, Question, Category
+from models import setup_db, Question, Category, db
 
 QUESTIONS_PER_PAGE = 10
 
@@ -95,6 +95,26 @@ def create_app(test_config=None):
     TEST: When you click the trash icon next to a question, the question will be removed.
     This removal will persist in the database and when you refresh the page.
     """
+    @app.route("/questions/<int:question_id>", methods=["DELETE"])
+    def delete_question(question_id):
+        question = Question.query.get(question_id)
+        deleted_question = question.format()
+
+        deleted = Question.query.filter_by(id=question_id).delete()
+        db.session.commit()
+
+        if deleted:
+
+            return jsonify({
+                    'success': True,
+                    'question': deleted_question,
+                })
+
+        return jsonify({
+                    'success': False,
+                    'question': deleted_question,
+                })
+
 
     """
     @TODO:
