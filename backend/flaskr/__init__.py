@@ -34,6 +34,38 @@ def create_app(test_config=None):
     Create an endpoint to handle GET requests
     for all available categories.
     """
+    @app.route("/categories/<int:category_id>/questions")
+    def get_category_questions(category_id):
+        category = Category.query.filter(Category.id==category_id).one_or_none()
+
+        if not category:
+            abort(404)
+
+        else:
+            questions = Question.query.filter(Question.category==str(category_id)).all()
+            questions_list = [question.format() for question in questions]
+            
+            return jsonify({
+                'success': True,
+                'questions': questions_list,
+                'total_questions': len(questions_list),
+                'current_category': category.type
+            })
+
+
+
+    """
+    @TODO:
+    Create an endpoint to handle GET requests for questions,
+    including pagination (every 10 questions).                  - completed
+    This endpoint should return a list of questions,
+    number of total questions, current category, categories.
+
+    TEST: At this point, when you start the application
+    you should see questions and categories generated,
+    ten questions per page and pagination at the bottom of the screen for three pages.
+    Clicking on the page numbers should update the questions.
+    """
     @app.route("/questions")
     def get_questions():
         page = request.args.get('page', 1, type=int)
@@ -59,21 +91,6 @@ def create_app(test_config=None):
             'categories': categories_obj,
             'current_category': categories_obj[4]
         })
-
-
-
-    """
-    @TODO:
-    Create an endpoint to handle GET requests for questions,
-    including pagination (every 10 questions).
-    This endpoint should return a list of questions,
-    number of total questions, current category, categories.
-
-    TEST: At this point, when you start the application
-    you should see questions and categories generated,
-    ten questions per page and pagination at the bottom of the screen for three pages.
-    Clicking on the page numbers should update the questions.
-    """
 
     """
     @TODO:
