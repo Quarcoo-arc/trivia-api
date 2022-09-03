@@ -156,7 +156,27 @@ def create_app(test_config=None):
     """
     @app.route("/questions/search", methods=['POST'])
     def search_question():
-        print("I made it here")
+        
+        search_term = request.get_json()["searchTerm"]
+
+        try:
+            questions = Question.query.filter(Question.question.ilike(f"%{search_term}%")).all()
+            
+            questions_list = [question.format() for question in questions]
+
+            category_type = Category.query.get(3).type
+
+            return jsonify({
+                'success': True,
+                'questions': questions_list,
+                'total_questions': len(questions_list),
+                'current_category': category_type
+            })
+            
+        except Exception as e:
+            abort(422)
+
+            
 
         return "Here"
 
