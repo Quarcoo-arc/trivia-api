@@ -192,12 +192,11 @@ def create_app(test_config=None):
 
     @app.route("/categories/<int:category_id>/questions")
     def get_category_questions(category_id):
-        category = Category.query.filter(Category.id==category_id).one_or_none()
 
-        if not category:
-            abort(404)
+        try:
 
-        else:
+            category = Category.query.filter(Category.id==category_id).one_or_none()
+
             questions = Question.query.filter(Question.category==str(category_id)).all()
             questions_list = [question.format() for question in questions]
             
@@ -208,6 +207,8 @@ def create_app(test_config=None):
                 'current_category': category.type
             })
 
+        except:
+            abort(404)    
 
 
     """
@@ -224,7 +225,6 @@ def create_app(test_config=None):
     @app.route("/quizzes", methods=["POST"])
     def get_quiz_question():
         data = request.get_json()
-        print(data)
 
         try:
             previous_questions = data["previous_questions"]
@@ -241,11 +241,8 @@ def create_app(test_config=None):
 
             if quiz_category:
                 for index, item in enumerate(filtered_list):
-                    print(index, item)
                     if item["category"] != quiz_category["id"]:
                         filtered_list.pop(index)
-            
-            print(filtered_list)
 
             selected_question = random.choice(filtered_list) if len(filtered_list) else None
                 
@@ -254,7 +251,6 @@ def create_app(test_config=None):
                 'question': selected_question,
             })
         except Exception as e :
-            print(e)
             abort()
 
 

@@ -115,6 +115,23 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data["success"], False)
         self.assertEqual(data["message"], "Unprocessable")
 
+    def test_get_questions_in_a_category(self):
+        category_id = 4
+        res = self.client().get(f"/categories/{category_id}/questions")
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data["success"], True)
+        self.assertTrue(data["total_questions"])
+        
+    def test_404_category_does_not_exist(self):
+        category_id = 400
+        res = self.client().get(f"/categories/{category_id}/questions")
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 404)
+        self.assertEqual(data["success"], False)
+        self.assertEqual(data["message"], "Not found")
 
 
 
