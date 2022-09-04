@@ -53,7 +53,7 @@ def create_app(test_config=None):
     """
     @TODO:
     Create an endpoint to handle GET requests for questions,
-    including pagination (every 10 questions).                  - completed
+    including pagination (every 10 questions).                
     This endpoint should return a list of questions,
     number of total questions, current category, categories.
 
@@ -71,22 +71,26 @@ def create_app(test_config=None):
         questions = Question.query.all()
         questions_list = [question.format() for question in questions]
 
-        questions_to_send = questions_list[start:end]
-
-        categories = Category.query.all()
+        if start > len(questions_list):
+            abort(404)
         
-        categories_obj = dict()
+        else:
+            questions_to_send = questions_list[start:end]
 
-        for category in categories:
-            categories_obj[category.id] = category.type
-        
-        return jsonify({
-            'success': True,
-            'questions': questions_to_send,
-            'total_questions': len(questions_list),
-            'categories': categories_obj,
-            'current_category': categories_obj[4]
-        })
+            categories = Category.query.all()
+            
+            categories_obj = dict()
+
+            for category in categories:
+                categories_obj[category.id] = category.type
+            
+            return jsonify({
+                'success': True,
+                'questions': questions_to_send,
+                'total_questions': len(questions_list),
+                'categories': categories_obj,
+                'current_category': categories_obj[4]
+            })
 
     """
     @TODO:
