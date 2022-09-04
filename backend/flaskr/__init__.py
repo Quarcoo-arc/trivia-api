@@ -101,23 +101,23 @@ def create_app(test_config=None):
     """
     @app.route("/questions/<int:question_id>", methods=["DELETE"])
     def delete_question(question_id):
-        question = Question.query.get(question_id)
-        deleted_question = question.format()
+        try:            
+            question = Question.query.get(question_id)
+            deleted_question = question.format()
 
-        deleted = Question.query.filter_by(id=question_id).delete()
-        db.session.commit()
+            deleted = Question.query.filter_by(id=question_id).delete()
+            db.session.commit()
 
-        if deleted:
+            if deleted:
 
-            return jsonify({
-                    'success': True,
-                    'question': deleted_question,
-                })
+                return jsonify({
+                        'success': True,
+                        'message': f'Question with id {question_id} was deleted successfully',
+                        'question': deleted_question,
+                    })
 
-        return jsonify({
-                    'success': False,
-                    'question': deleted_question,
-                })
+        except :
+            abort(422)
 
 
     """
@@ -130,7 +130,7 @@ def create_app(test_config=None):
     the form will clear and the question will appear at the end of the last page
     of the questions list in the "List" tab.
     """
-    @app.route("/questions", methods=['POST']) # TODO: Complete this
+    @app.route("/questions", methods=['POST']) 
     def create_question():
         
         payload = request.get_json()
