@@ -36,17 +36,21 @@ def create_app(test_config=None):
     """
     @app.route("/categories")
     def get_all_categories():
-        categories = Category.query.all()
+        try:
+            categories = Category.query.all()
 
-        categories_obj = dict()
+            categories_obj = dict()
 
-        for category in categories:
-            categories_obj[category.id] = category.type
+            for category in categories:
+                categories_obj[category.id] = category.type
 
-        return jsonify({
-            'success': True,
-            'categories': categories_obj,
-        })
+            return jsonify({
+                'success': True,
+                'categories': categories_obj,
+            })
+        
+        except:
+            abort(404)
 
 
 
