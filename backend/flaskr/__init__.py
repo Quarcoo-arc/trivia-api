@@ -250,8 +250,8 @@ def create_app(test_config=None):
                 'success': True,
                 'question': selected_question,
             })
-        except Exception as e :
-            abort()
+        except:
+            abort(422)
 
 
     """
