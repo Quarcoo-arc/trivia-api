@@ -68,6 +68,35 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data["success"], False)
         self.assertEqual(data["message"], "Unprocessable")
 
+    def test_create_new_question(self):
+        new_question = {
+            "question": "What was Ghana originally called?",
+            "answer": "Gold Coast",
+            "difficulty": 2,
+            "category": 2
+        }
+        res = self.client().post("/questions", json=new_question)
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data["success"], True)
+        self.assertTrue(data["question"])
+
+    def test_405_creation_of_question_not_allowed(self):
+        new_question = {
+            "question": "What was Ghana originally called?",
+            "answer": "Gold Coast",
+            "difficulty": 2,
+            "category": 2
+        }
+        res = self.client().post("/questions/45", json=new_question)
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 405)
+        self.assertEqual(data["success"], False)
+        self.assertEqual(data["message"], "Not allowed")
+
+
 
 
 # Make the tests conveniently executable
