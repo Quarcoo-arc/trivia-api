@@ -96,6 +96,25 @@ class TriviaTestCase(unittest.TestCase):
         self.assertEqual(data["success"], False)
         self.assertEqual(data["message"], "Not allowed")
 
+    def test_search_for_question(self):
+        search_term = {
+            "searchTerm" : "title"
+        }
+        res = self.client().post("/questions/search", json=search_term)
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(data["success"], True)
+        self.assertTrue(data["total_questions"])
+
+    def test_422_search_for_question_not_processed(self):
+        res = self.client().post("/questions/search", json={})
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 422)
+        self.assertEqual(data["success"], False)
+        self.assertEqual(data["message"], "Unprocessable")
+
 
 
 
